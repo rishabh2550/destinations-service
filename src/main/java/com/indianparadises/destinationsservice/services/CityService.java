@@ -20,6 +20,10 @@ public class CityService {
         return city;
     }
 
+    public void insertAboutSection(AboutSection aboutSection) {
+        cityRepository.insertAboutSection(aboutSection);
+    }
+
     public List<City> exploreDestinations() {
         return cityRepository.exploreDestinations();
     }

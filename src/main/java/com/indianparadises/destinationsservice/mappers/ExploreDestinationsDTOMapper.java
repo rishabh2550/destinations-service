@@ -1,4 +1,4 @@
-package mappers;
+package com.indianparadises.destinationsservice.mappers;
 
 import com.indianparadises.destinationsservice.dtos.ExploreDestinatiosDTO;
 import com.indianparadises.destinationsservice.dtos.ImageDTO;

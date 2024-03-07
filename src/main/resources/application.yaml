@@ -1,5 +1,5 @@
 server:
-  port: 1001
+  port: 3001
 
 spring:
   datasource:
@@ -13,3 +13,7 @@ spring:
       ddl-auto: update
     properties:
       hibernate.default_schema: dev
+
+images-service:
+  host: localhost
+  port: 2001

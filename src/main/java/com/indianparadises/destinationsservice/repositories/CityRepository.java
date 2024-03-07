@@ -1,6 +1,7 @@
 package com.indianparadises.destinationsservice.repositories;
 
 import com.indianparadises.destinationsservice.dtos.ExploreDestinatiosDTO;
+import com.indianparadises.destinationsservice.entities.AboutSection;
 import com.indianparadises.destinationsservice.entities.City;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -22,6 +23,10 @@ public class CityRepository {
     public City insertANewCity(City city) {
         em.persist(city);
         return city;
+    }
+
+    public void insertAboutSection(AboutSection aboutSection) {
+        em.persist(aboutSection);
     }
 
     public List<City> exploreDestinations() {

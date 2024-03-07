@@ -4,15 +4,16 @@ import com.indianparadises.destinationsservice.dtos.ExploreDestinatiosDTO;
 import com.indianparadises.destinationsservice.dtos.ImageDTO;
 import com.indianparadises.destinationsservice.entities.*;
 import com.indianparadises.destinationsservice.services.CityService;
-import mappers.ExploreDestinationsDTOMapper;
+import com.indianparadises.destinationsservice.mappers.ExploreDestinationsDTOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class CityController {
     private CityService cityService;
 
     @Autowired
-    private WebClient webClient;
+    private RestTemplate restTemplate;
 
     @RequestMapping(path = "/insertANewCity")
     public City insertANewagraCity() {
@@ -155,21 +156,22 @@ public class CityController {
 
     }
 
-    @GetMapping(path = "exploreDestinations")
+    @GetMapping(path = "/insertAboutSection")
+    public void insertAboutSection(@RequestBody AboutSection aboutSection) {
+        cityService.insertAboutSection(aboutSection);
+    }
+
+    @GetMapping(path = "/exploreDestinations")
     public ResponseEntity<List<ExploreDestinatiosDTO>> exploreDestinations() {
         try {
             List<City> cities = cityService.exploreDestinations();
-            List<Long> cityIds = new ArrayList<>();
-            cities.stream().forEach((city)->cityIds.add(city.getCityId()));
-            List<ImageDTO> imageDTOs = webClient.post()
-                    .uri("http://localhost:2001/fetchPrimaryCityImages")
-                    .bodyValue(cityIds)
-                    .retrieve()
-                    .bodyToFlux(ImageDTO.class)
-                    .collectList()
-                    .block();
+            ResponseEntity<List<ImageDTO>> response = restTemplate.exchange("http://localhost:2001/fetchPrimaryCityImages",
+                                                        HttpMethod.GET,
+                                                        null,
+                                                        new ParameterizedTypeReference<List<ImageDTO>>() {});
+            List<ImageDTO> imageDTOs = response.getBody();
             List<ExploreDestinatiosDTO> exploreDestinatiosDTOS = new ArrayList<>();
-            for(int i=0; i<cityIds.size(); i++) {
+            for(int i=0; i<cities.size(); i++) {
                 exploreDestinatiosDTOS.add(ExploreDestinationsDTOMapper.mapCityAndImageDTOToExploreDestinationsDTO(cities.get(i), imageDTOs.get(i)));
             }
             return new ResponseEntity<>(exploreDestinatiosDTOS, HttpStatus.OK);
